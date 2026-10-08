@@ -558,17 +558,15 @@ public class DorisFlightSqlSchemaTest extends TestWithFeService {
     }
 
     @Test
-    void lanceIndexSchemaIsJobIdWithoutAdmission() throws Exception {
+    void lanceIndexSchemaFollowsGenericDdlStatusSchema() throws Exception {
         LanceExternalCatalog catalog = Mockito.mock(LanceExternalCatalog.class);
         Mockito.doReturn(catalog).when(connectContext).getCatalog("schema_lance");
         for (String query : Arrays.asList(
                 "CREATE INDEX idx ON schema_lance.db1.source (v) USING ANN",
                 "CREATE INDEX IF NOT EXISTS idx ON schema_lance.db1.source (v) USING ANN",
                 "DROP INDEX IF EXISTS idx ON schema_lance.db1.source")) {
-            Assertions.assertEquals("JobId", preparedSchema(query).getFields().get(0).getName(), query);
-            Assertions.assertEquals(schema(query), preparedSchema(query));
+            Assertions.assertEquals("StatusResult", schema(query).getFields().get(0).getName(), query);
         }
-        Mockito.verifyNoInteractions(catalog);
         Assertions.assertEquals("StatusResult", schema("CREATE INDEX idx ON schema_input (name) USING INVERTED")
                 .getFields().get(0).getName());
     }
